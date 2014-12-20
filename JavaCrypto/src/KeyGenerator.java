@@ -6,7 +6,7 @@ public class KeyGenerator {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String test = "Please Work!!!";
+		String test = "Hello !!!";
 	}
 	
 }
