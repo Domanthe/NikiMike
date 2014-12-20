@@ -1,0 +1,11 @@
+/AuthenticateMessage.class
+/CryptoException.class
+/DecryptFile.class
+/DigitalSignature.class
+/EncryptFile.class
+/KeyGenerator.class
+/MessageDigest.class
+/SecurityTesting.class
+/SecureFileTransfer.class
+/PutSignature.class
+/MakeSignature.class
