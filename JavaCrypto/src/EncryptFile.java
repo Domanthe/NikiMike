@@ -1,5 +1,8 @@
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.KeyGenerator;
@@ -36,10 +39,12 @@ public class EncryptFile {
 	 * @param inputFile
 	 * @param outputFile
 	 * @throws CryptoException
-	 * @throws ShortBufferException 
+	 * @throws ShortBufferException
+	 * @throws InvalidAlgorithmParameterException 
 	 */
+	@SuppressWarnings("resource")
 	public static byte[] encryptFile(String key, File inputFile, File outputFile)
-			throws CryptoException, ShortBufferException {
+			throws CryptoException, ShortBufferException, InvalidAlgorithmParameterException {
 		byte[] outputBytes;
 		byte[] IV = null;
 		FileInputStream fileInputStream;
@@ -57,17 +62,20 @@ public class EncryptFile {
 			// be used to create the AES key:
 			KeyGenerator keygen = KeyGenerator.getInstance("AES");
 			SecretKey aesKey = keygen.generateKey();
+			
+			SecureRandom secureRandom = new SecureRandom();
+			
+			//Creating IV
+			byte[] seed = secureRandom.generateSeed(124);
+			AlgorithmParameterSpec algorithmParameterSpecIV = new IvParameterSpec(seed);
 
 			Cipher aesCipher;
 
-			// Create the cipher
+			// Create the cipher with AES, mode CBC and padding
 			aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
-			// Initialize the cipher for encryption
-			aesCipher.init(Cipher.ENCRYPT_MODE, aesKey);
-
-			// 3. create the IV
-			AlgorithmParameterSpec IVspec = new IvParameterSpec(IV);
+			// Initialize the cipher for encryption with Key and IV
+			aesCipher.init(Cipher.ENCRYPT_MODE, aesKey, algorithmParameterSpecIV);
 
 			fileInputStream = new FileInputStream(inputFile);
 			cipherInputStream = new CipherInputStream(fileInputStream, aesCipher);
@@ -90,7 +98,7 @@ public class EncryptFile {
 				cipherBytes = aesCipher.update(buffer, 0, noBytes, cipherBlock);
 				fileOutputStream.write(cipherBlock, 0, cipherBytes);
 			}
-			//Call doFinal at end.
+			// Call doFinal at end.
 			cipherBytes = aesCipher.doFinal(cipherBlock, 0);
 			fileOutputStream.write(cipherBlock, 0, cipherBytes);
 
