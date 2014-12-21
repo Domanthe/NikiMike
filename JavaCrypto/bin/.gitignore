@@ -9,3 +9,4 @@
 /SecureFileTransfer.class
 /PutSignature.class
 /MakeSignature.class
+/verifySignature.class
