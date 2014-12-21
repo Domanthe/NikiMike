@@ -8,7 +8,7 @@ public class SecurityTesting {
 		File decryptedFile = new File("document.decrypted");
 
 		try {
-			EncryptFile encrypt = new EncryptFile(key, inputFile, encryptedFile);
+			//EncryptFile encrypt = new EncryptFile(key, inputFile, encryptedFile);
 			DecryptFile decrypt = new DecryptFile(key, encryptedFile, decryptedFile);
 		} catch (CryptoException ex) {
 			System.out.println(ex.getMessage());

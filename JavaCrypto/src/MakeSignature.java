@@ -35,7 +35,7 @@ public class MakeSignature {
 
 		Signature dsa = Signature.getInstance("SHA1withDSA");
 
-		// Using the key pair generated in the key pair example, initialize
+		// Using the key pair, initialize
 		// the object with the private key. 
 		PrivateKey priv = pair.getPrivate();
 		dsa.initSign(priv);
