@@ -26,10 +26,11 @@ public class EncryptFile {
 	 * Few changes:
 	 * 1. Delete param key since we generate one secure with the keygenerator function
 	 * 	  so we don't need to send one.
-	 * 3. We have to use CipherOutputStream in order to encrypt and create a cipher text not
+	 * 2. We have to use CipherOutputStream in order to encrypt and create a cipher text not
 	 * 	  a CipherInputStream (this will be for the decryption)
-	 * 2. The function doesn't need to return a byte[] since inside this same function we use
-	 * 	  the outputBytes in order to create a File (encrypted one).		
+	 * 3. The function doesn't need to return a byte[] since inside this same function we use
+	 * 	  the outputBytes in order to create a File (encrypted one).
+	 * 4. The seed must be 16 byte long (not 124) else the IV length doesn't work		
 	 */
 
 	/**
@@ -73,7 +74,7 @@ public class EncryptFile {
 			SecureRandom secureRandom = new SecureRandom();
 			
 			//Creating IV
-			byte[] seed = secureRandom.generateSeed(124);
+			byte[] seed = secureRandom.generateSeed(16);
 			AlgorithmParameterSpec algorithmParameterSpecIV = new IvParameterSpec(seed);
 
 			Cipher aesCipher;
