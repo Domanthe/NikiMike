@@ -4,24 +4,33 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.Key;
 import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
+
 public class EncryptFile {
+	
+	/**
+	 * Few changes:
+	 * 1. Delete param key since we generate one secure with the keygenerator function
+	 * 	  so we don't need to send one.
+	 * 3. We have to use CipherOutputStream in order to encrypt and create a cipher text not
+	 * 	  a CipherInputStream (this will be for the decryption)
+	 * 2. The function doesn't need to return a byte[] since inside this same function we use
+	 * 	  the outputBytes in order to create a File (encrypted one).		
+	 */
 
 	/**
 	 * A Class that encrypts a file.
@@ -35,24 +44,22 @@ public class EncryptFile {
 	/**
 	 * Encrypt given File:
 	 * 
-	 * @param key
 	 * @param inputFile
-	 * @param outputFile
+	 * @param OutputFile
 	 * @throws CryptoException
 	 * @throws ShortBufferException
 	 * @throws InvalidAlgorithmParameterException 
 	 */
 	@SuppressWarnings("resource")
-	public static byte[] encryptFile(String key, File inputFile, File outputFile)
+	public static void encryptFile(File inputFile, File outputFile)
 			throws CryptoException, ShortBufferException, InvalidAlgorithmParameterException {
+		
 		byte[] outputBytes;
 		byte[] IV = null;
-		FileInputStream fileInputStream;
-		FileOutputStream fos;
-		CipherInputStream cipherInputStream;
+
 		// The default block size
 		final int blockSize = 16;
-
+		
 		try {
 
 			// Instantiate a KeyGenerator for AES. We do not specify a provider,
@@ -77,68 +84,44 @@ public class EncryptFile {
 			// Initialize the cipher for encryption with Key and IV
 			aesCipher.init(Cipher.ENCRYPT_MODE, aesKey, algorithmParameterSpecIV);
 
-			fileInputStream = new FileInputStream(inputFile);
-			cipherInputStream = new CipherInputStream(fileInputStream, aesCipher);
+			FileInputStream fileInputStream = new FileInputStream(inputFile);
 
 			byte[] inputBytes = new byte[(int) inputFile.length()];
 			fileInputStream.read(inputBytes);
 
 			outputBytes = aesCipher.update(inputBytes);
 
-			FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-			fileOutputStream.write(outputBytes);
-
+			FileOutputStream fos = new FileOutputStream(outputFile);
+			CipherOutputStream cos = new CipherOutputStream(fos, aesCipher);
+			
+			cos.write(outputBytes);
+			
 			// fos.write(IV, 0, IV.length);
 
 			byte[] buffer = new byte[blockSize];
 			int noBytes = 0;
 			byte[] cipherBlock = new byte[aesCipher.getOutputSize(buffer.length)];
+			
 			int cipherBytes;
 			while ((noBytes = fileInputStream.read(buffer)) != -1) {
 				cipherBytes = aesCipher.update(buffer, 0, noBytes, cipherBlock);
-				fileOutputStream.write(cipherBlock, 0, cipherBytes);
+				cos.write(cipherBlock, 0, cipherBytes);
 			}
+		
 			// Call doFinal at end.
 			cipherBytes = aesCipher.doFinal(cipherBlock, 0);
-			fileOutputStream.write(cipherBlock, 0, cipherBytes);
+			cos.write(cipherBlock, 0, cipherBytes);
 
 			// close the files
-			fileOutputStream.close();
-			fileInputStream.close();
-
-			// // Our cleartext
-			// byte[] cleartext = "This is just an example".getBytes();
-			//
-			// // Encrypt the cleartext
-			// byte[] ciphertext = aesCipher.doFinal(cleartext);
-			//
-			// // Initialize the same cipher for decryption
-			// aesCipher.init(Cipher.DECRYPT_MODE, aesKey);
-			//
-			// // Decrypt the ciphertext
-			// byte[] cleartext1 = aesCipher.doFinal(ciphertext);
-
-			// Key secretKey = new SecretKeySpec(key.getBytes(), ALGORITHM);
-			// Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-			// cipher.init(cipherMode, secretKey);
-			//
-			// FileInputStream inputStream = new FileInputStream(inputFile);
-			// byte[] inputBytes = new byte[(int) inputFile.length()];
-			// inputStream.read(inputBytes);
-			//
-			// outputBytes = cipher.doFinal(inputBytes);
-			//
-			// FileOutputStream outputStream = new FileOutputStream(outputFile);
-			// outputStream.write(outputBytes);
-			//
-			// inputStream.close();
-			// outputStream.close();
+			fos.close();
+			fos.close();
+			cos.close();
 
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
 				| BadPaddingException | IllegalBlockSizeException | IOException ex) {
 			throw new CryptoException("Error encrypting/decrypting file", ex);
 		}
-		return outputBytes;
+		
 	}
 
 }
