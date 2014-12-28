@@ -13,6 +13,14 @@ import java.security.spec.RSAKeyGenParameterSpec;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
+/*
+ * Hybrid Encryption: Asymmetric + Symmetric encryption.
+ * We generate a pair of keys- public and private.
+ * we put the public and private key in Key store, "Alice" will send us a key
+ * encrypted with our public key, we will decrypt the message with our private key,
+ * and encrypt + sign our File (message) with the given (from alice) symmetric key.  
+ */
+
 public class KeyManager {
 
 	KeyPairGenerator generateKeyPair;
@@ -41,26 +49,26 @@ public class KeyManager {
 		// For the RSA Algorithm parameters getting a big exponent number
 		publicExponent = new BigInteger(Integer.toString(e));
 		System.out.println("e =" + publicExponent);
-		
-		kfactory = KeyFactory.getInstance("RSA");
-		
-		//Initializes RSA keyGenParameters: Key size and the Exponent for the RSA Algorithm
-		param = new RSAKeyGenParameterSpec(keysize, publicExponent);
-		//Inputs the parameters
-		generateKeyPair.initialize(param);
-		//Generates the Key Pair: Public and Private Key.
-		keyPair = generateKeyPair.generateKeyPair();
-	
-		//or this
-		kfactory = KeyFactory.getInstance("RSA");
-	    RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(new BigInteger(
-	        "12345678", 16), new BigInteger("11", 16));
-	    RSAPrivateKeySpec privKeySpec = new RSAPrivateKeySpec(new BigInteger(
-	        "12345678", 16), new BigInteger("12345678",
-	        16));
 
-	    RSAPublicKey pubKey = (RSAPublicKey) kfactory.generatePublic(pubKeySpec);
-	    RSAPrivateKey privKey = (RSAPrivateKey) kfactory.generatePrivate(privKeySpec);
+		kfactory = KeyFactory.getInstance("RSA");
+
+		// Initializes RSA keyGenParameters: Key size and the Exponent for the
+		// RSA Algorithm
+		param = new RSAKeyGenParameterSpec(keysize, publicExponent);
+		// Inputs the parameters
+		generateKeyPair.initialize(param);
+		// Generates the Key Pair: Public and Private Key.
+		keyPair = generateKeyPair.generateKeyPair();
+
+		// or this
+		kfactory = KeyFactory.getInstance("RSA");
+		RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(new BigInteger("12345678", 16),
+				new BigInteger("11", 16));
+		RSAPrivateKeySpec privKeySpec = new RSAPrivateKeySpec(new BigInteger("12345678", 16),
+				new BigInteger("12345678", 16));
+
+		RSAPublicKey pubKey = (RSAPublicKey) kfactory.generatePublic(pubKeySpec);
+		RSAPrivateKey privKey = (RSAPrivateKey) kfactory.generatePrivate(privKeySpec);
 	}
 
 	// keyPair.initialize(1024, random);
