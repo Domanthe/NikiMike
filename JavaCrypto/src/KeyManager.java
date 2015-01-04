@@ -3,6 +3,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
@@ -15,13 +16,18 @@ import java.security.spec.RSAPublicKeySpec;
 
 /*
  * Hybrid Encryption: Asymmetric + Symmetric encryption.
- * We generate a pair of keys- public and private.
- * we put the public and private key in Key store, "Alice" will send us a key
- * encrypted with our public key, we will decrypt the message with our private key,
+ * Generation of pair of keys- public and private.
+ * Storing them in Key store, "Alice" sends key encrypted with stored public key (Certificate),
+ * Decryption of message with our private key,
  * and encrypt + sign our File (message) with the given (from alice) symmetric key.  
  */
-
 public class KeyManager {
+	
+	/* Key Store */
+	private static final String KEY_STORE_ALIAS = "keystorealias";
+	private static final String KEY_STORE_PASSWORD = "keystorepassword";
+	
+	private KeyStore keyStore;
 
 	KeyPairGenerator generateKeyPair;
 	SecureRandom secureRandom;
@@ -32,15 +38,24 @@ public class KeyManager {
 	KeyFactory kfactory;
 	RSAPublicKeySpec kspec;
 	RSAKeyGenParameterSpec param;
+	int e, keysize;
 
-	int e = 128;
-	int keysize = 1024; // KeySize
+	/*
+	 * Initializes a new Key mangaer object.
+	 */
+	public KeyManager() {
 
-	public KeyManager(String algorithm) throws NoSuchAlgorithmException, NoSuchProviderException,
-			InvalidKeySpecException, InvalidAlgorithmParameterException {
+	}
+
+	/**
+	 * Generates a new Key Pair using the RSA algorithm, storing it in the
+	 * Keystore.
+	 */
+	public void generateKeyPairRSA() throws NoSuchAlgorithmException,
+			InvalidAlgorithmParameterException {
 		// New Secure Random Number Object
-		// secureRandom = new SecureRandom();
-		// seed = secureRandom.generateSeed(16);
+		secureRandom = new SecureRandom();
+		seed = secureRandom.generateSeed(16);
 
 		// Generating RSA key pair
 		// generateKeyPair = KeyPairGenerator.getInstance("RSA");
@@ -56,21 +71,13 @@ public class KeyManager {
 		// RSA Algorithm
 		param = new RSAKeyGenParameterSpec(keysize, publicExponent);
 		// Inputs the parameters
-		generateKeyPair.initialize(param);
+		generateKeyPair.initialize(param, secureRandom);
 		// Generates the Key Pair: Public and Private Key.
 		keyPair = generateKeyPair.generateKeyPair();
 
-		// or this
-		kfactory = KeyFactory.getInstance("RSA");
-		RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(new BigInteger("12345678", 16),
-				new BigInteger("11", 16));
-		RSAPrivateKeySpec privKeySpec = new RSAPrivateKeySpec(new BigInteger("12345678", 16),
-				new BigInteger("12345678", 16));
+		RSAPublicKey pubKey = (RSAPublicKey) keyPair.getPublic();
+		RSAPrivateKey privKey = (RSAPrivateKey) keyPair.getPrivate();
 
-		RSAPublicKey pubKey = (RSAPublicKey) kfactory.generatePublic(pubKeySpec);
-		RSAPrivateKey privKey = (RSAPrivateKey) kfactory.generatePrivate(privKeySpec);
 	}
-
-	// keyPair.initialize(1024, random);
 
 }
