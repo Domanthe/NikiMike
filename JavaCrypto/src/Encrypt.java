@@ -1,4 +1,4 @@
-
+package crypto;
 
 import java.io.*;
 import java.security.*;
@@ -167,10 +167,10 @@ public class Encrypt {
 			byte[] clearTextBytes = readFileAsBytes(new File(cleartextFile));
 
 			// Digest message
-//			MessageDigest messageDigest = MessageDigest.getInstance(
-//					DIGEST_ALGO, DIGEST_ALGO_PROVIDER);
-//			messageDigest.update(clearTextBytes);
-//			byte[] clearTextDigest = messageDigest.digest();
+			MessageDigest messageDigest = MessageDigest.getInstance(
+					DIGEST_ALGO, DIGEST_ALGO_PROVIDER);
+			messageDigest.update(clearTextBytes);
+			byte[] clearTextDigest = messageDigest.digest();
 
 			// Get the private key from the KeyStore
 			PrivateKeyEntry entry = (PrivateKeyEntry) keyStore.getEntry(
@@ -184,7 +184,7 @@ public class Encrypt {
 
 			// Create the signature
 			signatureObject.initSign(privateKey);
-//			signatureObject.update(clearTextDigest);
+			signatureObject.update(clearTextDigest);
 			signature = signatureObject.sign();
 
 		} catch (Exception e) {
