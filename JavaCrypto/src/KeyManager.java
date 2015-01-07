@@ -1,7 +1,7 @@
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -14,14 +14,9 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.UnrecoverableEntryException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
+import java.security.cert.CertificateException;
 import java.security.spec.RSAKeyGenParameterSpec;
-import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
-import java.util.Properties;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -87,15 +82,18 @@ public class KeyManager {
 
 	/**
 	 * Load Key Store
+	 * 
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 * @throws CertificateException
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyStoreException
 	 */
-	private void loadKeyStore() {
-		try {
-			keyStore = KeyStore.getInstance("JKS");
-			keyStore.load(new FileInputStream(PATH_TO_KEY_STORE), KEY_STORE_PASSWORD.toCharArray());
-		} catch (Exception e) {
-			System.out.println("Error: Cannot load Key Store " + e.getMessage());
-			System.exit(1);
-		}
+	public KeyStore loadKeyStore() throws NoSuchAlgorithmException, CertificateException,
+			FileNotFoundException, IOException, KeyStoreException {
+		keyStore = KeyStore.getInstance("JKS");
+		keyStore.load(new FileInputStream(PATH_TO_KEY_STORE), KEY_STORE_PASSWORD.toCharArray());
+		return keyStore;
 	}
 
 	/**
