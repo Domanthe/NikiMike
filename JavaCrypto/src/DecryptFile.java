@@ -30,12 +30,12 @@ public class DecryptFile {
 	 * @param outputFile
 	 * @throws CryptoException
 	 */
-	public DecryptFile(String key, File inputFile, File outputFile) throws CryptoException {
+	public DecryptFile(String key, File inputFile, File outputFile) {
 		doDecryption(Cipher.DECRYPT_MODE, key, inputFile, outputFile);
 	}
 
 	private void doDecryption(int cipherMode, String key, File inputFile, File outputFile)
-			throws CryptoException {
+			 {
 		try {
 			Key secretKey = new SecretKeySpec(key.getBytes(), ALGORITHM);
 			Cipher cipher = Cipher.getInstance(TRANSFORMATION);
@@ -55,7 +55,7 @@ public class DecryptFile {
 
 		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
 				| BadPaddingException | IllegalBlockSizeException | IOException ex) {
-			throw new CryptoException("Error encrypting/decrypting file", ex);
+			;
 		}
 	}
 }
