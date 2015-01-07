@@ -15,7 +15,6 @@ public class MainEncrypt {
 	 */
 	public static void main(String[] args) {
 
-		
 		MakeSignature sign;
 		KeyStore keyStore;
 		String alias;
@@ -23,7 +22,8 @@ public class MainEncrypt {
 
 		// Sign the file Asymmetrically
 		System.out.println("Signing message.");
-		byte[] signature = new MakeSignature(PATH_TO_PLAIN_TEXT, keyStore, alias, password).getSignature();
+		byte[] signature = new MakeSignature(PATH_TO_PLAIN_TEXT, keyStore, alias, password)
+				.getSignature();
 
 		// Encrypt our message into a file
 		System.out.print("Encrypt message and put into new cipher file: ");
