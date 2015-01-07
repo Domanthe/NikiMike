@@ -11,6 +11,12 @@ import java.security.SignatureException;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.UnrecoverableEntryException;
 
+/**
+ * A Class that makes and verifies signature.
+ * 
+ * @author Dominik Hempel & Mickael Soussan
+ * 
+ */
 public class MakeSignature {
 	private byte[] textBeforeSignature, signature;
 	

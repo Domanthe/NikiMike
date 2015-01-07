@@ -4,11 +4,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.KeyStore.PrivateKeyEntry;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class DecryptFile {
@@ -21,6 +27,7 @@ public class DecryptFile {
 	 */
 	private static final String ALGORITHM = "AES";
 	private static final String TRANSFORMATION = "AES";
+	KeyManager km;
 
 	/**
 	 * Initializes a Decryption Object
@@ -30,32 +37,43 @@ public class DecryptFile {
 	 * @param outputFile
 	 * @throws CryptoException
 	 */
-	public DecryptFile(String key, File inputFile, File outputFile) throws CryptoException {
-		doDecryption(Cipher.DECRYPT_MODE, key, inputFile, outputFile);
+	public DecryptFile(String configurationFile) {
+		// Extract parameters from file
+		extractConfiguration("ConfigurationFile.txt");
+
+		// Load Key store
+		km.loadKeyStore();
 	}
 
-	private void doDecryption(int cipherMode, String key, File inputFile, File outputFile)
-			throws CryptoException {
+	/**
+	 * Decrypt encrypted message from file
+	 * 
+	 * @return an array of bytes representing the clear text
+	 */
+	public byte[] DecryptMessage() {
+		byte[] clearTextBytes = null;
 		try {
-			Key secretKey = new SecretKeySpec(key.getBytes(), ALGORITHM);
-			Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-			cipher.init(cipherMode, secretKey);
+			PrivateKeyEntry keys = (PrivateKeyEntry) keyStore.getEntry(ksAlias,
+					new KeyStore.PasswordProtection(KEY_STORE_PASSWORD.toCharArray()));
+			PrivateKey privateKey = keys.getPrivateKey();
 
-			FileInputStream inputStream = new FileInputStream(inputFile);
-			byte[] inputBytes = new byte[(int) inputFile.length()];
-			inputStream.read(inputBytes);
+			Cipher cipher = Cipher.getInstance(KeyEncryptAlgo, KeyEncryptAlgoProvider);
+			cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-			byte[] outputBytes = cipher.doFinal(inputBytes);
+			SecretKey secretKey = new SecretKeySpec(cipher.doFinal(cipherSecretKey), SecretKeyAlgo);
 
-			FileOutputStream outputStream = new FileOutputStream(outputFile);
-			outputStream.write(outputBytes);
+			cipher = Cipher.getInstance(MessageEncryptAlgo, MessageEncryptAlgoProvider);
+			cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(IV));
 
-			inputStream.close();
-			outputStream.close();
+			clearTextBytes = cipher.doFinal(readFileAsBytes(new File(cipherFileLocation)));
 
-		} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
-				| BadPaddingException | IllegalBlockSizeException | IOException ex) {
-			throw new CryptoException("Error encrypting/decrypting file", ex);
+		} catch (Exception e) {
+			System.out.println("Error: Cannot decrypt message " + e.getMessage());
+			System.exit(1);
 		}
+
+		this.decryptedText = clearTextBytes;
+		return clearTextBytes;
 	}
+
 }

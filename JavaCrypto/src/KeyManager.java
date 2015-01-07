@@ -36,7 +36,7 @@ public class KeyManager {
 	/* Key Store */
 	private static final String KEY_STORE_ALIAS = "keystorealias";
 	private static final String KEY_STORE_PASSWORD = "keystorepassword";
-	private static final String PATH_TO_KEY_STORE = "C:\\Users\\Tal\\workspace\\JavaCrypto\\keystore.jks";
+	private static final String PATH_TO_KEY_STORE = "keystore.jks";
 
 	private KeyStore keyStore;
 	private SecretKey secretKey;
