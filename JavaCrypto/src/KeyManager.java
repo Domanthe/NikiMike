@@ -88,7 +88,7 @@ public class KeyManager {
 	/**
 	 * Load Key Store
 	 */
-	private void loadKeyStore() {
+	public void loadKeyStore() {
 		try {
 			keyStore = KeyStore.getInstance("JKS");
 			keyStore.load(new FileInputStream(PATH_TO_KEY_STORE), KEY_STORE_PASSWORD.toCharArray());
