@@ -13,3 +13,5 @@
 /KeyManager.class
 /Encrypt.class
 /Decrypt.class
+/MainEncrypt.class
+/CryptRandom.class
