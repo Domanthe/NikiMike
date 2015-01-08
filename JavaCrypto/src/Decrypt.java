@@ -7,7 +7,7 @@ import javax.crypto.IllegalBlockSizeException;
 public class Decrypt {
 
 	final static String PATH_TO_CONFIGURATION_FILE = "D:\\Encrypt\\ConfigurationFile.txt";
-	private static final String KEY_STORE_PASSWORD = "keystorepassword";
+	private static final String KEY_STORE_PASSWORD = "easiestpasswordeveronplanet";
 
 	/**
 	 * @param args

@@ -27,9 +27,9 @@ import javax.crypto.SecretKey;
 public class KeyManager {
 
 	/* Key Store */
-	private static final String KEY_STORE_ALIAS = "keystorealias";
-	private static final String KEY_STORE_PASSWORD = "keystorepassword";
-	private static final String PATH_TO_KEY_STORE = "keystore.jks";
+	private static final String KEY_STORE_ALIAS = "thisisdominiksalias";
+	private static final String KEY_STORE_PASSWORD = "easiestpasswordeveronplanet";
+	private static final String PATH_TO_KEY_STORE = "D:\\Encrypt\\ConfigurationFile.txt";
 
 	private KeyStore keyStore;
 	private SecretKey secretKey;
@@ -50,7 +50,7 @@ public class KeyManager {
 	 * Initializes a new Key mangaer object.
 	 */
 	public KeyManager() throws NoSuchAlgorithmException, NoSuchProviderException {
-
+		
 		// Create a Random Secret Key for AES algorithm.
 		KeyGenerator keygen = KeyGenerator.getInstance("AES", "SunJCE");
 		// Initialize key with size 128 bits.

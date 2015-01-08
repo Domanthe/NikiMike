@@ -1,7 +1,7 @@
 public class Encrypt {
 
-	private static final String ALIAS_KEY_STORE = "keystorealias";
-	private static final String PASSWORD_KEY_STORE = "keystorepassword";
+	private static final String ALIAS_KEY_STORE = "thisisdominiksalias";
+	private static final String PASSWORD_KEY_STORE = "easiestpasswordeveronplanet";
 
 	/* Path to plain text and Configuration File */
 	final static String PATH_TO_PLAIN_TEXT = "D:\\Encrypt\\Message.txt";
