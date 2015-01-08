@@ -18,7 +18,7 @@ public class MainEncrypt {
 
 		// Sign the file Asymmetrically
 		System.out.println("Signing message.");
-		byte[] signature = new MakeSignature(PATH_TO_PLAIN_TEXT, keyManager.loadKeyStore(),
+		byte[] signature = new SignatureHandler(PATH_TO_PLAIN_TEXT, keyManager.loadKeyStore(),
 				ALIAS_KEY_STORE, PASSWORD_KEY_STORE).getSignature();
 
 		// Encrypt message using AES algorithm, IV, and secret key.

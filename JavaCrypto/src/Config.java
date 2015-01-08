@@ -1,4 +1,5 @@
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.util.Properties;
 
 public class Config {
@@ -7,14 +8,23 @@ public class Config {
 	private static final String DIGEST_ALGO = "MD5";
 	private static final String DIGEST_ALGO_PROVIDER = "SUN";
 
-	/**
-	 * Convert a byte array into its hex String equivalent.
-	 * 
-	 * @param bytes
-	 *            an array of bytes to be converted to hex
-	 * @return the hex representation of the byte array
-	 * 
-	 */
+	private String keyStorePath;
+	private String keyStoreAlias;
+	private byte[] IV = new byte[16];
+	private String cipherFilePath;
+	private byte[] cipherSecretKey;
+	private byte[] cipherSignature;
+	private String MessageEncryptAlgo;
+	private String MessageEncryptAlgoProvider;
+	private String KeyEncryptAlgo;
+	private String KeyEncryptAlgoProvider;
+	private String SignatureEncryptAlgo;
+	private String SignatureEncryptAlgoProvider;
+	private String SecretKeyAlgo;
+	private String DigestAlgo;
+	private String DigestAlgoProvider;
+
+	// Converts from array of bytes to Hex represantation.
 	public static String toHex(byte[] bytes) {
 		if (bytes == null) {
 			return null;
@@ -26,13 +36,19 @@ public class Config {
 		return buffer.toString();
 	}
 
-	/**
-	 * Convert a single byte into its hex String equivalent.
-	 * 
-	 * @param b
-	 *            a byte to be converted
-	 * @return a converted byte to its hex equivalent
-	 */
+	// Converts to Bytearray.
+	public static byte[] hexToByteArray(String hexString) {
+		int length = hexString.length();
+		byte[] data = new byte[length / 2];
+
+		for (int i = 0; i < length; i += 2) {
+			data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4) + Character
+					.digit(hexString.charAt(i + 1), 16));
+		}
+		return data;
+	}
+
+	// Converts from 1 Byte to Hex.
 	private static String byteToHex(byte b) {
 		char HEX_DIGIT[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
 				'e', 'f' };
@@ -41,7 +57,7 @@ public class Config {
 	}
 
 	/**
-	 * Create configuration file. This file holds the information in order to
+	 * Creates Configuration File. THe File holds the information in order to
 	 * decrypt the file.
 	 * 
 	 * @param configFilePath
@@ -75,4 +91,103 @@ public class Config {
 			System.exit(1);
 		}
 	}
+
+	/**
+	 * Loads all info needed from configuration file for decryption.
+	 * 
+	 * @param configFilePath
+	 *            - Configuration file location
+	 */
+	public void loadConfiguration(String configFilePath) {
+		Properties fileOutputStream = new Properties();
+		try {
+			fileOutputStream.load(new FileReader(configFilePath));
+
+			keyStorePath = fileOutputStream.getProperty("KeyStoreFile");
+			keyStoreAlias = fileOutputStream.getProperty("KeyStoreAlias");
+			IV = hexToByteArray(fileOutputStream.getProperty("IV"));
+			cipherFilePath = fileOutputStream.getProperty("EncryptedFileLocation");
+			cipherSecretKey = hexToByteArray(fileOutputStream.getProperty("EncryptedKey"));
+			cipherSignature = hexToByteArray(fileOutputStream.getProperty("Signature"));
+			MessageEncryptAlgo = fileOutputStream.getProperty("MessageEncryptAlgo");
+			MessageEncryptAlgoProvider = fileOutputStream.getProperty("MessageEncryptAlgoProvider");
+			KeyEncryptAlgo = fileOutputStream.getProperty("KeyEncryptAlgo");
+			KeyEncryptAlgoProvider = fileOutputStream.getProperty("KeyEncryptAlgoProvider");
+			SignatureEncryptAlgo = fileOutputStream.getProperty("SignatureEncryptAlgo");
+			SignatureEncryptAlgoProvider = fileOutputStream
+					.getProperty("SignatureEncryptAlgoProvider");
+			SecretKeyAlgo = fileOutputStream.getProperty("SecretKeyAlgo");
+			DigestAlgo = fileOutputStream.getProperty("DigestAlgo");
+			DigestAlgoProvider = fileOutputStream.getProperty("DigestAlgoProvider");
+		} catch (Exception e) {
+			System.out.println("Error: cannot read the configuration file " + e.getMessage());
+			System.exit(1);
+		}
+
+	}
+
+	/*
+	 * Getters: so one can get all info he needs for Decryption.
+	 */
+
+	public String getKeyStorePath() {
+		return keyStoreAlias;
+	}
+
+	public String getKeyStoreAlias() {
+		return keyStorePath;
+	}
+
+	public byte[] getIV() {
+		return IV;
+	}
+
+	public String getCipherFilePath() {
+		return cipherFilePath;
+	}
+
+	public byte[] getCipherSecretKey() {
+		return cipherSecretKey;
+	}
+
+	public byte[] getCipherSignature() {
+		return cipherSignature;
+	}
+
+	public String getMessageEncryptAlgo() {
+		return MessageEncryptAlgo;
+	}
+
+	public String getMessageEncryptAlgoProvider() {
+		return MessageEncryptAlgoProvider;
+	}
+
+	public String getKeyEncryptAlgo() {
+		return KeyEncryptAlgo;
+	}
+
+	public String getKeyEncryptAlgoProvider() {
+		return KeyEncryptAlgoProvider;
+	}
+
+	public String getSignatureEncryptAlgo() {
+		return SignatureEncryptAlgo;
+	}
+
+	public String getSignatureEncryptAlgoProvider() {
+		return SignatureEncryptAlgoProvider;
+	}
+
+	public String getSecretKeyAlgo() {
+		return SecretKeyAlgo;
+	}
+
+	public String getDigestAlgo() {
+		return DigestAlgo;
+	}
+
+	public String getDigestAlgoProvider() {
+		return DigestAlgoProvider;
+	}
+
 }

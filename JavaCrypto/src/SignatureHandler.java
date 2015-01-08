@@ -3,12 +3,15 @@ import java.io.FileInputStream;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.KeyStore.PrivateKeyEntry;
+import java.security.spec.InvalidKeySpecException;
 import java.security.UnrecoverableEntryException;
 
 /**
@@ -17,18 +20,20 @@ import java.security.UnrecoverableEntryException;
  * @author Dominik Hempel & Mickael Soussan
  * 
  */
-public class MakeSignature {
+public class SignatureHandler {
 	private byte[] textBeforeSignature, signature;
-	
-	//Initializing MakeSignature.
-	public MakeSignature(String pathToMessage, KeyStore keyStore, String alias, String password)
+	private KeyStore keyStore;
+
+	// Initializing MakeSignature.
+	public SignatureHandler(String pathToMessage, KeyStore keyStore, String alias, String password)
 			throws Exception {
 
+		this.keyStore = keyStore;
 		// Turn file to byte file.
 		textBeforeSignature = charFileToByteFile(new File(pathToMessage));
 
 		// Signature operation on byte file.
-		initializeSignature(textBeforeSignature, keyStore, alias, password);
+		initializeSignature(textBeforeSignature, alias, password);
 	}
 
 	/**
@@ -62,9 +67,11 @@ public class MakeSignature {
 	 * @throws KeyStoreException
 	 * @throws UnrecoverableEntryException
 	 */
-	private void initializeSignature(byte[] dataToSign, KeyStore keyStore, String alias,
-			String password) throws NoSuchAlgorithmException, NoSuchProviderException,
-			InvalidKeyException, SignatureException, UnrecoverableEntryException, KeyStoreException {
+	private void initializeSignature(byte[] dataToSign, String alias, String password)
+			throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException,
+			SignatureException, UnrecoverableEntryException, KeyStoreException {
+
+		byte[] dataAfterDigest = digestMessage(dataToSign);
 
 		// Get the private key from the KeyStore
 		PrivateKeyEntry entry = (PrivateKeyEntry) keyStore.getEntry(alias,
@@ -77,13 +84,50 @@ public class MakeSignature {
 		signatureInstance.initSign(privateKey);
 
 		// Update and sign the data.
-		signatureInstance.update(dataToSign);
+		signatureInstance.update(dataAfterDigest);
 		signature = signatureInstance.sign();
 	}
 
 	// Gets text with signature.
 	public byte[] getSignature() {
 		return signature;
+	}
+
+	/*
+	 * Checking Signature.
+	 */
+	public static boolean checkSignature(KeyStore ks, String alias, String password,
+			byte[] signature, byte[] data, byte[] encodedPubKey) throws NoSuchProviderException,
+			InvalidKeyException, SignatureException, InvalidKeySpecException,
+			UnrecoverableEntryException, KeyStoreException, NoSuchAlgorithmException {
+
+		byte[] dataAfterDigest = digestMessage(data);
+
+		PrivateKeyEntry entry = (PrivateKeyEntry) ks.getEntry(alias,
+				new KeyStore.PasswordProtection(password.toCharArray()));
+		PublicKey publicKey = entry.getCertificate().getPublicKey();
+
+		Signature sig = Signature.getInstance("SHA1withDSA");
+
+		// Initializing the object with the public key.
+		sig.initVerify(publicKey);
+
+		// Update and validate the data.
+		sig.update(dataAfterDigest);
+		boolean isVerified = sig.verify(signature);
+		System.out.println("signature verifies: " + isVerified);
+
+		return isVerified;
+	}
+
+	// Digest message
+	private static byte[] digestMessage(byte[] data) throws NoSuchAlgorithmException,
+			NoSuchProviderException {
+		MessageDigest messageDigest = MessageDigest.getInstance("MD5", "SUN");
+		messageDigest.update(data);
+		byte[] clearTextDigest = messageDigest.digest();
+
+		return clearTextDigest;
 	}
 
 }

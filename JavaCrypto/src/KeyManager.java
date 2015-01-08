@@ -24,13 +24,6 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-/*
- * Hybrid Encryption: Asymmetric + Symmetric encryption.
- * Generation of pair of keys- public and private.
- * Storing them in Key store, "Alice" sends key encrypted with stored public key (Certificate),
- * Decryption of message with our private key,
- * and encrypt + sign our File (message) with the given (from alice) symmetric key.  
- */
 public class KeyManager {
 
 	/* Key Store */
