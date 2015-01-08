@@ -37,7 +37,7 @@ public class Decrypt {
 	 *            - Configuration file location
 	 */
 	public Decrypt(String configFileLocation) {
-
+		
 		// Extract parameters from file
 		extractConfiguration(configFileLocation);
 
