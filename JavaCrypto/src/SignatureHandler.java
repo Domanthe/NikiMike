@@ -22,18 +22,24 @@ import java.security.UnrecoverableEntryException;
  */
 public class SignatureHandler {
 	private byte[] textBeforeSignature, signature;
-	private KeyStore keyStore;
+	private static KeyStore keyStore;
+	private static String alias;
+	private static String password;
 
 	// Initializing MakeSignature.
+	@SuppressWarnings("static-access")
 	public SignatureHandler(String pathToMessage, KeyStore keyStore, String alias, String password)
 			throws Exception {
 
 		this.keyStore = keyStore;
+		this.alias = alias;
+		this.password = password;
 		// Turn file to byte file.
 		textBeforeSignature = charFileToByteFile(new File(pathToMessage));
 
 		// Signature operation on byte file.
-		initializeSignature(textBeforeSignature, alias, password);
+		initializeSignature(textBeforeSignature);
+
 	}
 
 	/**
@@ -67,9 +73,9 @@ public class SignatureHandler {
 	 * @throws KeyStoreException
 	 * @throws UnrecoverableEntryException
 	 */
-	private void initializeSignature(byte[] dataToSign, String alias, String password)
-			throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException,
-			SignatureException, UnrecoverableEntryException, KeyStoreException {
+	private void initializeSignature(byte[] dataToSign) throws NoSuchAlgorithmException,
+			NoSuchProviderException, InvalidKeyException, SignatureException,
+			UnrecoverableEntryException, KeyStoreException {
 
 		byte[] dataAfterDigest = digestMessage(dataToSign);
 
@@ -96,14 +102,14 @@ public class SignatureHandler {
 	/*
 	 * Checking Signature.
 	 */
-	public static boolean checkSignature(KeyStore ks, String alias, String password,
-			byte[] signature, byte[] data, byte[] encodedPubKey) throws NoSuchProviderException,
-			InvalidKeyException, SignatureException, InvalidKeySpecException,
-			UnrecoverableEntryException, KeyStoreException, NoSuchAlgorithmException {
+	public static boolean checkSignature(byte[] signature, byte[] data)
+			throws NoSuchProviderException, InvalidKeyException, SignatureException,
+			InvalidKeySpecException, UnrecoverableEntryException, KeyStoreException,
+			NoSuchAlgorithmException {
 
 		byte[] dataAfterDigest = digestMessage(data);
 
-		PrivateKeyEntry entry = (PrivateKeyEntry) ks.getEntry(alias,
+		PrivateKeyEntry entry = (PrivateKeyEntry) keyStore.getEntry(alias,
 				new KeyStore.PasswordProtection(password.toCharArray()));
 		PublicKey publicKey = entry.getCertificate().getPublicKey();
 

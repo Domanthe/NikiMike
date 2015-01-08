@@ -7,6 +7,7 @@ public class Config {
 	/* Message digest algorithm */
 	private static final String DIGEST_ALGO = "MD5";
 	private static final String DIGEST_ALGO_PROVIDER = "SUN";
+	final static String PATH_TO_CONFIGURATION_FILE = "D:\\Encrypt\\ConfigurationFile.txt";
 
 	private String keyStorePath;
 	private String keyStoreAlias;
@@ -188,6 +189,10 @@ public class Config {
 
 	public String getDigestAlgoProvider() {
 		return DigestAlgoProvider;
+	}
+
+	public String getConfigPath() {
+		return PATH_TO_CONFIGURATION_FILE;
 	}
 
 }

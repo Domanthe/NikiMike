@@ -1,24 +1,17 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.KeyStore.PrivateKeyEntry;
-import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -40,12 +33,12 @@ public class DecryptFile {
 	 * @param key
 	 * @param inputFile
 	 */
-	public DecryptFile(String configFilePath) throws NoSuchAlgorithmException,
+	public DecryptFile(Config configuration) throws NoSuchAlgorithmException,
 			NoSuchProviderException, CertificateException, FileNotFoundException,
 			KeyStoreException, IOException {
 		// Load data from configuration file.
-		config = new Config();
-		config.loadConfiguration(configFilePath);
+		config = configuration;
+		config.loadConfiguration(config.getConfigPath());
 	}
 
 	/**
@@ -56,8 +49,8 @@ public class DecryptFile {
 	 * @throws BadPaddingException
 	 * @throws IllegalBlockSizeException
 	 */
-	public byte[] DecryptMessage(KeyStore keyStore, String password)
-			throws IllegalBlockSizeException, BadPaddingException, Exception {
+	public byte[] decrypt(KeyStore keyStore, String password) throws IllegalBlockSizeException,
+			BadPaddingException, Exception {
 
 		// Gets the private Key from Key Store.
 		PrivateKeyEntry keys = (PrivateKeyEntry) keyStore.getEntry(config.getKeyStoreAlias(),
@@ -94,6 +87,10 @@ public class DecryptFile {
 		}
 		fileTurnedToBytes.close();
 		return fileAsBytes;
+	}
+
+	public Config getConfig() {
+		return config;
 	}
 
 }
