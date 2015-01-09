@@ -1,0 +1,7 @@
+Mickael Soussan -  328944921
+Dominik Hempel  -  
+ 
+1. Extract the jar
+2. Run Encryption.java for encrypting the plaintext.txt file 
+3. Run Decryption.java for decrypting it
+4. We made a java documentation with all our methods and signatures
